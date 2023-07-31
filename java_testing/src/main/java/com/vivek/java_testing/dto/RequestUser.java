@@ -10,6 +10,11 @@ public class RequestUser {
     @NotNull(message = "user name cannot be null")
     private String userName;
     private String description;
-    @NotNull(message = "user email cannot be null")
-    private String email;
+    @NotNull(message = "user id cannot be null")
+
+    private String userId;
+    @NotNull(message = "user password cannot be null")
+    private String password;
+    @NotNull(message = "user key cannot be null")
+    private String key;
 }

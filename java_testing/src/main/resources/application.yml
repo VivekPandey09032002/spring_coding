@@ -1,6 +1,6 @@
-server:
-  address: 10.0.61.27
-  port: 8080
+#server:
+#  address: 10.0.61.27
+#  port: 8080
 
 spring:
   datasource:
@@ -11,6 +11,6 @@ spring:
 #  hibernate configuration
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
-    show-sql: false
+    show-sql: true
     hibernate:
       ddl-auto: update

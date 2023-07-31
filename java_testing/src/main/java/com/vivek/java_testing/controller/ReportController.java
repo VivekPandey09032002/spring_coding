@@ -94,8 +94,20 @@ public class ReportController {
         log.debug("number of users found : {}", users.size());
         List<ResponseMonthlyReport> reportList = new ArrayList<>();
         for (User user : users) {
-            final var userMonthlyAttendance = attendanceRepository.getUserMonthlyAttendance(user.getEmail(),
+            final var userMonthlyAttendance = attendanceRepository.getUserMonthlyAttendance(user.getUserId(),
                     firstMonthDate);
+            if (userMonthlyAttendance.isEmpty()) {
+                final var responseTemp = ResponseMonthlyReport.builder()
+                        .userName(user.getUserName())
+                        .userId(user.getUserId())
+                        .totalAttendance(ReportUtility.addDaysSkippingWeekends(firstMonthDate, LocalDate.now()))
+                        .leaves(0)
+                        .lateDays(0)
+                        .hourCompletion(0)
+                        .build();
+                reportList.add(responseTemp);
+                continue;
+            }
             final var responseDto = getResponseMonthlyReport(userMonthlyAttendance, currentTime);
             reportList.add(responseDto);
         }
@@ -140,12 +152,12 @@ public class ReportController {
         log.debug("number of users found : {}", users.size());
         List<ResponseMonthlyReport> reportList = new ArrayList<>();
         for (User user : users) {
-            final var userMonthlyAttendance = attendanceRepository.getUserMonthlyAttendance(user.getEmail(),
+            final var userMonthlyAttendance = attendanceRepository.getUserMonthlyAttendance(user.getUserId(),
                     firstMonthDate);
             if (userMonthlyAttendance.isEmpty()) {
                 final var responseTemp = ResponseMonthlyReport.builder()
                         .userName(user.getUserName())
-                        .email(user.getEmail())
+                        .userId(user.getUserId())
                         .totalAttendance(ReportUtility.addDaysSkippingWeekends(firstMonthDate, LocalDate.now()))
                         .leaves(0)
                         .lateDays(0)

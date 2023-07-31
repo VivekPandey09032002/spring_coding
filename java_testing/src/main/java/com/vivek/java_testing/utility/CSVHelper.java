@@ -21,7 +21,7 @@ public class CSVHelper {
                 CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
 
             csvPrinter.printRecord(Arrays.asList(
-                    "user_email",
+                    "user_id",
                     "user_name",
                     "in_time",
                     "out_time",
@@ -29,7 +29,7 @@ public class CSVHelper {
                     "hours_completed"));
             for (ResponseDailyReport report : reports) {
                 List<String> data = Arrays.asList(
-                        report.getEmail(),
+                        report.getUserId(),
                         report.getUserName(),
                         report.getInTime().toString(),
                         "null",
@@ -54,7 +54,7 @@ public class CSVHelper {
                 CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(out), format)) {
 
             csvPrinter.printRecord(Arrays.asList(
-                    "user_email",
+                    "user_id",
                     "user_name",
                     "total_attendance",
                     "user_leaves",
@@ -62,7 +62,7 @@ public class CSVHelper {
                     "hours_completed"));
             for (ResponseMonthlyReport report : reports) {
                 List<String> data = Arrays.asList(
-                        report.getEmail(),
+                        report.getUserId(),
                         report.getUserName(),
                         String.valueOf(report.getTotalAttendance()),
                         String.valueOf(report.getLeaves()),

@@ -38,6 +38,9 @@ public class Book {
     @Temporal(TemporalType.DATE)
     private LocalDate modifiedDate;
 
+    @ManyToOne
+    private  Author author;
+
     @PrePersist
     public void preUpdateDate() {
         this.modifiedDate = LocalDate.now();

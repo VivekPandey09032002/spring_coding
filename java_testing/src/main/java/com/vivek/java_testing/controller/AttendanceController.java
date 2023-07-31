@@ -9,6 +9,8 @@ import com.vivek.java_testing.exception.CustomException;
 import com.vivek.java_testing.repository.AttendanceRepository;
 import com.vivek.java_testing.repository.UserRepository;
 import com.vivek.java_testing.service.UploadService;
+
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -20,8 +22,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -33,18 +38,19 @@ public class AttendanceController {
     private final UploadService uploadService;
     private final AttendanceRepository attendanceRepository;
     private final ModelMapper mapper;
-    private static final String USER_IN_TIME_ERROR = "cannot register in time ";
-    private static final String USER_OUT_TIME_ERROR = "cannot register out time";
+    private static final String USER_IN_TIME_ERROR = "Cannot register in time ";
+    private static final String USER_OUT_TIME_ERROR = "Cannot register out time";
 
     @PostMapping("/in-time")
-    public ResponseEntity<ResponseBody<Object>> registerUserInTime(@RequestBody RequestImage requestImage)
+    public ResponseEntity<ResponseBody<Object>> registerUserInTime(@RequestBody RequestImage requestImage,
+            HttpServletRequest request)
             throws IOException {
-        final var email = requestImage.getEmail();
-        log.debug("user email {}", email);
+        final var userId = requestImage.getUserId();
+        log.debug("User userId {}", userId);
         User user = userRepository
-                .findById(email)
+                .findById(userId)
                 .orElseThrow(() -> new CustomException(USER_IN_TIME_ERROR,
-                        List.of("no user found with email : " + email), HttpStatus.NOT_FOUND));
+                        List.of("No user found with userId : " + userId), HttpStatus.NOT_FOUND));
         // image data
         String data = requestImage.getData();
         String[] strings = data.split(",");
@@ -52,8 +58,11 @@ public class AttendanceController {
         String extension = getExtension(strings);
         log.debug("file extension: {}", extension);
         // attendance already found
-        if (attendanceRepository.getCurrentDayAttendance(user.getEmail(), LocalDate.now()).isPresent()) {
-            throw new CustomException(USER_IN_TIME_ERROR, List.of("already entered in time for current day"),
+        if (attendanceRepository.getCurrentDayAttendance(user.getUserId(), LocalDate.now()).isPresent()) {
+            throw new CustomException(USER_IN_TIME_ERROR, List.of("Already signed in for the day at " + LocalTime.now()
+                    .format(DateTimeFormatter
+                            .ofLocalizedTime(FormatStyle.SHORT)
+                            .withLocale(Locale.US))),
                     HttpStatus.BAD_REQUEST);
         }
         // saving the user info the database
@@ -65,35 +74,41 @@ public class AttendanceController {
         attendanceRepository.save(currentDayAttendance);
         log.info("in time attendance saved");
         // convert base64 string to binary data and saving to classpath
-        uploadService.saveImage(fileName(email, extension), strings[1]);
+        uploadService.saveImage(fileName(userId, extension), strings[1]);
         log.info("image saved ");
         final var responseDto = mapper.map(currentDayAttendance, ResponseAttendanceDetail.class);
-        final var responseBody = ResponseBody.builder().data(List.of(responseDto)).message("in time attendance saved")
+        final var responseBody = ResponseBody.builder().data(List.of(responseDto)).message("In time attendance saved")
                 .status(HttpStatus.CREATED).build();
         return ResponseEntity.ok(responseBody);
 
     }
 
-    @GetMapping("/out-time/{email}")
-    public ResponseEntity<ResponseBody<Object>> registerUserOutTime(@PathVariable String email) throws IOException {
-        log.debug("user email {}", email);
+    @GetMapping("/out-time/{userId}")
+    public ResponseEntity<ResponseBody<Object>> registerUserOutTime(@PathVariable String userId) throws IOException {
+        log.debug("user userId {}", userId);
 
-        userRepository.findById(email)
-                .orElseThrow(() -> new CustomException(USER_OUT_TIME_ERROR, List.of("no user found with the given id"),
+        userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(USER_OUT_TIME_ERROR,
+                        List.of("No user found with the given id: " + userId),
                         HttpStatus.BAD_REQUEST));
 
-        Attendance attendance = attendanceRepository.getCurrentDayAttendance(email, LocalDate.now())
-                .orElseThrow(() -> new CustomException(USER_OUT_TIME_ERROR, List.of("no in time found for the user"),
+        Attendance attendance = attendanceRepository.getCurrentDayAttendance(userId, LocalDate.now())
+                .orElseThrow(() -> new CustomException(USER_OUT_TIME_ERROR,
+                        List.of("No in time found for the userId: " + userId),
                         HttpStatus.BAD_REQUEST));
         if (attendance.getOutTime() != null) {
-            throw new CustomException("cannot register out-time", List.of("already entered out time for current day "),
+            throw new CustomException(
+                    "Cannot register out-time", List.of("Already signed out for the day " + LocalTime.now()
+                            .format(DateTimeFormatter
+                                    .ofLocalizedTime(FormatStyle.SHORT)
+                                    .withLocale(Locale.US))),
                     HttpStatus.BAD_REQUEST);
         }
         attendance.setOutTime(LocalTime.now());
         attendance = attendanceRepository.save(attendance);
         log.info("out time attendance saved");
         final var responseDto = mapper.map(attendance, ResponseAttendanceDetail.class);
-        final var responseBody = ResponseBody.builder().data(List.of(responseDto)).message("out time attendance saved")
+        final var responseBody = ResponseBody.builder().data(List.of(responseDto)).message("Out time attendance saved")
                 .status(HttpStatus.CREATED).build();
         return ResponseEntity.ok(responseBody);
 

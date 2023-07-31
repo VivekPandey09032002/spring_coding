@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class RequestImage {
     private String data;
-    private String email;
+    private String userId;
 }

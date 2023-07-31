@@ -34,6 +34,12 @@ public class BookController {
         return ResponseEntity.ok(responseBody);
     }
 
+    @GetMapping("/advanceSearch/{bookName}")
+    public ResponseEntity<ResponseBody<Object>> getBookSearch(@PathVariable("bookId") UUID bookId) {
+        final var requestBook = bookService.getBook(bookId);
+        final var responseBody = ResponseBody.builder().data(List.of(requestBook)).message("book detail with given id").status(HttpStatus.CREATED).build();
+        return ResponseEntity.ok(responseBody);
+    }
     @GetMapping
     public ResponseEntity<ResponseBody<Object>> getBooks() {
         final var requestBooks = bookService.getBooks();

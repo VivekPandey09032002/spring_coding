@@ -17,7 +17,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class ResponseDailyReport {
     private String userName;
-    private String email;
+    private String userId;
     @JsonProperty("in_time")
     private LocalTime inTime;
     @JsonProperty("out_time")

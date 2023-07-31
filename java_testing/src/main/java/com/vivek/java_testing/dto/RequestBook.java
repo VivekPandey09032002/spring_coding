@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.vivek.java_testing.annotations.ValidDate;
+import com.vivek.java_testing.entity.Author;
 import com.vivek.java_testing.formatter.CustomLocalDateDeserializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,4 +32,5 @@ public class RequestBook {
     @JsonProperty("publish_date")
     @JsonDeserialize(using = CustomLocalDateDeserializer.class)
     private LocalDate publishDate;
+    private Author author;
 }

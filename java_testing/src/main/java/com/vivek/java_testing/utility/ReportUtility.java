@@ -42,7 +42,7 @@ public class ReportUtility {
         LocalDate monthStartDate = LocalDate.now().withDayOfMonth(1);
         return ResponseMonthlyReport.builder()
                 .totalAttendance(addDaysSkippingWeekends(monthStartDate, LocalDate.now()))
-                .email(user.getEmail())
+                .userId(user.getUserId())
                 .leaves(addDaysSkippingWeekends(monthStartDate, LocalDate.now()) - attendances.size())
                 .userName(user.getUserName())
                 .lateDays((int) lateDays)

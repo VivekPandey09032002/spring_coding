@@ -9,17 +9,20 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AttendanceRepository extends JpaRepository<Attendance,Integer> {
-    @Query("select a from Attendance a where a.user.email = ?1 and a.attendanceDate = ?2")
-    Optional<Attendance> getCurrentDayAttendance(String email, LocalDate attendanceDate);
+    @Query("select a from Attendance a where a.user.userId = ?1 and a.attendanceDate = ?2")
+    Optional<Attendance> getCurrentDayAttendance(String userId, LocalDate attendanceDate);
 
-    @Query("select a from Attendance a where a.user.email = ?1")
-    List<Attendance> getUserAttendance(String email);
+    @Query("select a from Attendance a where a.user.userId = ?1")
+    List<Attendance> getUserAttendance(String userId);
+
+    @Query("select a from Attendance a where a.attendanceDate between ?1 and ?2")
+    List<Attendance> findByAttendanceDateBetween(LocalDate attendanceDateStart, LocalDate attendanceDateEnd);
 
     @Query("select a from Attendance a where a.attendanceDate = ?1")
     List<Attendance> findByAttendanceDate(LocalDate attendanceDate);
 
 
-    @Query("select a from Attendance a where a.user.email = ?1 and a.attendanceDate >= ?2")
-    List<Attendance> getUserMonthlyAttendance(String email, LocalDate attendanceDate);
+    @Query("select a from Attendance a where a.user.userId = ?1 and a.attendanceDate >= ?2")
+    List<Attendance> getUserMonthlyAttendance(String userId, LocalDate attendanceDate);
 
 }

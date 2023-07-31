@@ -20,14 +20,14 @@ public class TestController {
     private final UserRepository userRepository;
     @GetMapping("/record")
     public Attendance testAttendance(){
-        User user=  User.builder().email("2@gmail.com").build();
+        User user=  User.builder().userId("2@gmail.com").build();
         userRepository.save(user);
         Attendance attendance =  Attendance.builder().attendanceId(1).attendanceDate(LocalDate.now()).inTime(LocalTime.now()).outTime(LocalTime.now()).user(user).build();
         attendance  =  attendanceRepository.save(attendance);
 
         log.info("attendance {}",attendance);
         attendanceRepository.save(attendance);
-        var attendace =  attendanceRepository.getCurrentDayAttendance(user.getEmail(),LocalDate.now());
+        var attendace =  attendanceRepository.getCurrentDayAttendance(user.getUserId(),LocalDate.now());
         return attendace.get();
     }
 }

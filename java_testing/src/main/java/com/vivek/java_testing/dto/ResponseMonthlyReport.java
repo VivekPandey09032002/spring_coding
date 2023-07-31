@@ -10,7 +10,7 @@ import lombok.Data;
 @Builder
 public class ResponseMonthlyReport {
     private String userName;
-    private String email;
+    private String userId;
     @JsonProperty("total_attendance")
     private int totalAttendance;
     private int leaves;
