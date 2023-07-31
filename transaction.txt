@@ -1,0 +1,9 @@
+    /*
+     * REQUIRED_NEW -> old transaction will be suspended if exists, always create new transaction
+     * REQUIRED -> by default, if old transaction exists then use that else create new transaction
+     * MANDATORY -> if no transaction found throw exception else use old transaction => No existing transaction found for transaction marked with propagation 'mandatory'
+     * SUPPORTS -> if transaction found then use else run non-transactional
+     * NOT-SUPPORTED -> if transaction found then suspend it or else run non-transactional
+     * NEVER -> if transaction found throws exception else run non-transactional => Existing transaction found for transaction marked with propagation 'never'
+     * MANDATORY && NEVER => THROWS EXCEPTION
+     */
